@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 
 export const registerUser =async (req,res)=>{
     try{
-        const {username,password} = req.body;
+        const username = req.body.username?.trim();
+        const password = req.body.password?.trim();
         if(!username || !password){
             return res.status(400).json({
                 success: false, 
@@ -47,7 +48,8 @@ export const registerUser =async (req,res)=>{
 
 export const loginUser =async (req,res)=>{
     try{
-        const {username,password} = req.body;
+        const username = req.body.username?.trim();
+        const password = req.body.password?.trim();
         if(!username || !password){
             return res.status(400).json({
                 success: false, 

@@ -12,7 +12,6 @@ const AddTask = () => {
     const navigate = useNavigate(); 
 
     const token = localStorage.getItem("token");
-    console.log("TOKEN IN ADDTASK:", token);
 
     useEffect(() => {
         if (!token) {
@@ -36,6 +35,7 @@ const AddTask = () => {
                 setError(data.message);
                 return;
             }
+            localStorage.setItem("message", "Task added successfully");
             navigate('/dashboard');
         }catch(err){
             setError("Failed to add task");

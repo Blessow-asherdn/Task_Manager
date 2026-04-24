@@ -1,20 +1,35 @@
 import './TaskManager.css';
-import {useState} from 'react';
+import {useState,useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 const Home = () => {
     const [username,setusername] = useState('');
     const [password,setpassword] = useState('');
     const [isLogin,setisLogin] = useState(true);
-    const [error, setError] = useState(""); 
+    const [message, setMessage] = useState({ text: "", type: "" });
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
+    const showMessage = (msg, type = "success") => {
+        setMessage({ text: msg, type });
+
+        setTimeout(() => {
+            setMessage({ text: "", type: "" });
+        }, 2000);
+    };
+
+    useEffect(() => {
+        const msg = localStorage.getItem("message");
+        if (msg) {
+            showMessage(msg);
+            localStorage.removeItem("message");
+        }
+    }, []);
+    
     const handleSubmit = async(e) =>{
         e.preventDefault();
 
-        setError("");
         setLoading(true);
 
         const url = isLogin? 'http://localhost:5000/api/auth/login':'http://localhost:5000/api/auth/register';
@@ -22,23 +37,26 @@ const Home = () => {
             const res = await fetch(url,{
                 method: 'POST',
                 headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({username,password})
+                body:JSON.stringify({
+                    username:username.trim(),
+                    password:password.trim()
+                })
             });
             const info = await res.json();
             if(!res.ok){
-                setError(info.message);
+                showMessage(info.message, "error");
                 return;
             }
             if(isLogin){
                 localStorage.setItem("token",info.data.token);
+                localStorage.setItem("message", "Login successful");
                 navigate('/dashboard');
             }else{
+                showMessage("Account created successfully","success");
                 setisLogin(true);
-                setError("Account Created Successfully, Please Login");
             }
-            console.log("TOKEN STORED:", info.data.token);
         }catch(err){
-            setError('Something went Wrong');
+            showMessage("Something went wrong", "error");
         }finally{
             setLoading(false);
         }
@@ -47,7 +65,11 @@ const Home = () => {
     return (
         <div className="home">
             <h2>{isLogin? 'Task Manager Login': 'Task Manager Register'}</h2>
-            {error && <p style={{color:'red'}}>{error}</p>}
+            {message.text && (
+                <p style={{ color: message.type === "error" ? "red" : "green" }}>
+                    {message.text}
+                </p>
+            )}
             <form onSubmit={handleSubmit}>
                 <label>UserName</label>
                     <input type="text" placeholder="Enter Username" value={username} 
