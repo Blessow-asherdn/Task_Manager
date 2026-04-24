@@ -7,7 +7,7 @@ A full stack Task Manager application with register,login and adds and manages t
 
 ## Features
 - User registration and login(JWT)
-- Password hashing using bycrypt
+- Password hashing using bcrypt
 - Create Tasks
 - View Tasks
 - Update Tasks
@@ -41,12 +41,14 @@ npm run dev
 ## Frontend Setup
 
 ```bash
-cd src
 npm install
 ```
 
 ---
 ## Frontend Run
+
 ```bash
 npm start
 ```
+
+---
